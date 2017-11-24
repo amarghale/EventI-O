@@ -1,68 +1,78 @@
 <?php
 session_start();
+require_once("class.user.php");
+$login = new USER();
 
-if(isset($_SESSION['user_session']) != "")
-{
-	header("Location: admin-panel.php");
+if (isset($_POST['btn-login'])) {
+    $uname = strip_tags($_POST['txt_uname_email']);
+    $umail = strip_tags($_POST['txt_uname_email']);
+    $upass = strip_tags($_POST['txt_password']);
+
+    if ($login->doLogin($uname, $umail, $upass)) 
+    {  
+         $login->redirect('admin-panel.php');
+    } 
+    else 
+    {
+        $error = "Wrong Details !";
+    }
 }
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Login</title>
-<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen"> 
-<script type="text/javascript" src="js/jquery-1.11.3-jquery.min.js"></script>
-<script type="text/javascript" src="js/validation.min.js"></script>
-<link href="css/signup.css" rel="stylesheet" type="text/css" media="screen">
-<script type="text/javascript" src="js/login-script.js"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Coding Cage : Login</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+        <link rel="stylesheet" href="css/signup.css" type="text/css"  />
+    </head>
+    <body>
 
-</head>
+        <div class="signin-form">
 
-<body>
-    
-<div class="signin-form">
+            <div class="container">
 
-	<div class="container">
-     
-        
-       <form class="form-signin" method="post" id="login-form">
-      
-        <h2 class="form-signin-heading">Log In to WebApp.</h2><hr />
-        
-        <div id="error">
-        <!-- error will be shown here ! -->
+
+                <form class="form-signin" method="post" id="login-form">
+
+                    <h2 class="form-signin-heading">Log In to WebApp.</h2><hr />
+
+                    <div id="error">
+<?php
+if (isset($error)) {
+    ?>
+                            <div class="alert alert-danger">
+                                <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; <?php echo $error; ?> !
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="txt_uname_email" placeholder="Username or E mail ID" required />
+                        <span id="check-e"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="txt_password" placeholder="Your Password" />
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                        <button type="submit" name="btn-login" class="btn btn-default">
+                            <i class="glyphicon glyphicon-log-in"></i> &nbsp; SIGN IN
+                        </button>
+                    </div>  
+                    <br />
+                    <label>Don't have account yet ! <a href="sign-up.php">Sign Up</a></label>
+                </form>
+
+            </div>
+
         </div>
-        
-        <div class="form-group">
-        <input type="email" class="form-control" placeholder="Email address" name="user_email" id="user_email" />
-        <span id="check-e"></span>
-        </div>
-        
-        <div class="form-group">
-        <input type="password" class="form-control" placeholder="Password" name="password" id="password" />
-        </div>
-       
-     	<hr />
-        
-        <div class="form-group">
-            <button type="submit" class="btn btn-default" name="btn-login" id="btn-login">
-    		<span class="glyphicon glyphicon-log-in"></span> &nbsp; Sign In
-			</button> 
-		
-        </div>  
-      
-        <div class="form-group">
-          <a class="btn btn-primary" href="signup.php" role="button">Signup</a>
-        </div>
-      </form>
 
-    </div>
-    
-</div>
-    
-<script src="js/bootstrap.min.js"></script>
-
-</body>
+    </body>
 </html>
