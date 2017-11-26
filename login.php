@@ -10,7 +10,7 @@ if (isset($_POST['btn-login'])) {
 
     if ($login->doLogin($uname, $umail, $upass)) 
     {  
-         $login->redirect('admin-panel.php');
+         $login->redirect('admin.php');
     } 
     else 
     {

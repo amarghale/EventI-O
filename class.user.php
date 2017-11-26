@@ -1,5 +1,4 @@
 <?php
-
 require_once('config/dbconfig.php');
 
 class USER
@@ -20,18 +19,19 @@ class USER
 		return $stmt;
 	}
 	
-	public function register($uname,$umail,$upass)
+	public function register($uname,$umail,$upass,$activation)
 	{
 		try
 		{
 			$new_password = password_hash($upass, PASSWORD_DEFAULT);
 			
-			$stmt = $this->conn->prepare("INSERT INTO users(user_name,user_email,user_pass) 
-		                                               VALUES(:uname, :umail, :upass)");
+			$stmt = $this->conn->prepare("INSERT INTO users(user_name,user_email,user_password,token) 
+		                                               VALUES(:uname, :umail, :upass, :activation)");
 												  
 			$stmt->bindparam(":uname", $uname);
 			$stmt->bindparam(":umail", $umail);
-			$stmt->bindparam(":upass", $new_password);										  
+			$stmt->bindparam(":upass", $new_password);
+			$stmt->bindparam(":activation", $activation);
 				
 			$stmt->execute();	
 			
@@ -43,17 +43,22 @@ class USER
 		}				
 	}
 	
+    
+    public function lastID() {
+        $stmt = $this->conn->lastInsertId();
+        return $stmt;
+    }
 	
 	public function doLogin($uname,$umail,$upass)
 	{
 		try
 		{
-			$stmt = $this->conn->prepare("SELECT user_id, user_name, user_email, user_pass FROM users WHERE user_name=:uname OR user_email=:umail ");
+			$stmt = $this->conn->prepare("SELECT * FROM users WHERE user_name=:uname OR user_email=:umail ");
 			$stmt->execute(array(':uname'=>$uname, ':umail'=>$umail));
 			$userRow=$stmt->fetch(PDO::FETCH_ASSOC);
 			if($stmt->rowCount() == 1)
 			{
-				if(password_verify($upass, $userRow['user_pass']))
+				if(password_verify($upass, $userRow['user_password']) && $userRow['activation_status'] == 1)
 				{
 					$_SESSION['user_session'] = $userRow['user_id'];
 					return true;
